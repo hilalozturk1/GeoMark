@@ -1,11 +1,10 @@
+# Next.js + Chakra UI Map Application - Vercel Deployment
 
-## Next.js + Chakra UI Map Application - Vercel Deployment
-
-### Project Overview
+## Project Overview
 
 This project is a **Next.js** application built with **Chakra UI**, designed around an interactive map. Users can add, edit, and customize locations on the map. The app also calculates the total distance between saved locations and displays them on the map. Additionally, it can be deployed to **Vercel** automatically using **GitHub Actions**.
 
-### Features
+## Features
 
 1. **Interactive Map**:
    - Users can add locations by clicking on the map.
@@ -19,7 +18,7 @@ This project is a **Next.js** application built with **Chakra UI**, designed aro
    - **Total Distance**: The app calculates the total route distance between all saved locations.
    - **User's Location**: The app detects and shows the user's current position on the map.
 
-### Technologies Used
+## Technologies Used
 
 - **Next.js**: A powerful React framework used for building modern web applications.
 - **Chakra UI**: A UI component library for React that makes it easy to build accessible and responsive web apps.
@@ -27,30 +26,31 @@ This project is a **Next.js** application built with **Chakra UI**, designed aro
 - **GitHub Actions**: Used for automating deployment workflows.
 - **Vercel CLI**: The command-line tool to deploy applications to Vercel.
 
-
-### Prerequisites
+## Prerequisites
 
 - Node.js >=18.x
 
-### Key Application Features
+## Key Application Features
+
 - **Interactive Map**: Add or edit locations by clicking on the map. Each location can be customized with a color and name.
-
 - **Distance Calculation**: The app calculates the total distance between all saved locations.
-
 - **User Location**: The app displays the user's current location on the map.
 
-### GitHub Actions Workflow
+## GitHub Actions Workflow
+
 The deployment process is automated using GitHub Actions. Every time you push to the main branch, the app is automatically deployed to Vercel. Here’s the configuration:
 
-    name: Deploy Next.js to Vercel
+```yaml
+name: Deploy Next.js to Vercel
 
-    on:
-      push:
-        branches:
-            - main
-    jobs:
-        deploy:
-            runs-on: ubuntu-latest
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -76,8 +76,7 @@ The deployment process is automated using GitHub Actions. Every time you push to
 
       - name: Clean up Vercel CLI
         run: rm -rf vercel.tar.gz vercel
-
-
+```
 
 ### Conclusion
 This project demonstrates how to build an interactive map application with **Next.js** and **Chakra UI**. The app allows users to manage locations and calculate distances. It also shows how to automate deployment using **GitHub Actions** and **Vercel**.
