@@ -27,6 +27,12 @@ jobs:
       - name: Deploy to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      - name: Download Vercel CLI
         run: |
-          curl -sL https://github.com/vercel/vercel/releases/download/v24.0.0/vercel-24.0.0-linux-x64.tar.gz | tar xz
+          curl -sL https://github.com/vercel/vercel/releases/download/v24.0.0/vercel-24.0.0-linux-x64.tar.gz -o vercel.tar.gz
+          file vercel.tar.gz 
+          tar -xzvf vercel.tar.gz
           ./vercel --prod --token $VERCEL_TOKEN
+
+      - name: Clean up Vercel CLI
+        run: rm -rf vercel.tar.gz vercel
