@@ -25,20 +25,28 @@ const colors = createListCollection({
   ],
 });
 
+interface Location {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  color: string;
+}
+
 export default function HomePage() {
   const [name, setName] = useState<string>("");
   const [color, setColor] = useState<string>("#FF0000");
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [editingLocation, setEditingLocation] = useState<any>(null);
+  const [editingLocation, setEditingLocation] = useState<Location | null>(null); 
   const [coordinates, setCoordinates] = useState<{ lat: number | null; lng: number | null }>({
     lat: null,
     lng: null,
   });
   const [currentPosition, setCurrentPosition] = useState<{ lat: number; lng: number } | null>(null);
 
-  const locations = useLocationStore((state: any) => state.locations);
-  const addLocation = useLocationStore((state: any) => state.addLocation);
-  const updateLocation = useLocationStore((state: any) => state.updateLocation);
+  const locations = useLocationStore((state: { locations: Location[] }) => state.locations); 
+  const addLocation = useLocationStore((state: { addLocation: (location: Location) => void }) => state.addLocation);
+  const updateLocation = useLocationStore((state: { updateLocation: (id: string, location: Location) => void }) => state.updateLocation);
   const [totalDistance, setTotalDistance] = useState<number | null>(null);
 
   useEffect(() => {
@@ -65,7 +73,7 @@ export default function HomePage() {
     setName("");
   };
 
-  const handleEditLocation = (location: any) => {
+  const handleEditLocation = (location: Location) => {
     setEditMode(true);
     setEditingLocation(location);
     setName(location.name);
@@ -73,8 +81,9 @@ export default function HomePage() {
   };
 
   const handleUpdateLocation = () => {
-    if (editingLocation) {
+    if (editingLocation && coordinates.lat !== null && coordinates.lng !== null) {
       updateLocation(editingLocation.id, {
+        id: editingLocation.id,
         name,
         color,
         latitude: coordinates.lat,
@@ -83,8 +92,11 @@ export default function HomePage() {
       setEditMode(false);
       setEditingLocation(null);
       setName("");
+    } else {
+      alert("Please provide valid coordinates.");
     }
   };
+  
 
   return (
     <Box p={4}>
@@ -151,7 +163,7 @@ export default function HomePage() {
         </Flex>
 
         <Flex wrap={"wrap"} display={"flex"} justify="flex-start" gap={4} mt={4}>
-          {locations.map((location: any) => (
+          {locations.map((location: Location) => ( 
             <Box
               key={location.id}
               p={1}

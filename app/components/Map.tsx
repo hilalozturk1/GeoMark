@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   GoogleMap,
   LoadScript,
@@ -7,20 +7,27 @@ import {
   DirectionsRenderer,
 } from "@react-google-maps/api";
 
+type Location = {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  color?: string;
+};
+
 type MapProps = {
   onClick: (coords: { lat: number; lng: number }) => void;
   onDistanceCalculated?: (distanceKm: number) => void;
-  locations: {
-    id: string;
-    name: string;
-    latitude: number;
-    longitude: number;
-    color?: string;
-  }[];
+  locations: Location[];
   userLocation: { lat: number; lng: number } | null;
 };
 
-export default function Map({ onClick, locations, userLocation, onDistanceCalculated }: MapProps) {
+export default function Map({
+  onClick,
+  locations,
+  userLocation,
+  onDistanceCalculated,
+}: MapProps) {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
 
   const handleClick = (e: google.maps.MapMouseEvent) => {
@@ -33,24 +40,24 @@ export default function Map({ onClick, locations, userLocation, onDistanceCalcul
 
   const defaultCenter = userLocation || { lat: 41.0082, lng: 28.9784 };
 
-  const getOrderedLocations = () => {
-    if (!userLocation || locations.length === 0) return [];
-
-    const haversine = (a: any, b: any) => {
-      const toRad = (v: number) => (v * Math.PI) / 180;
-      const R = 6371;
-      const dLat = toRad(b.latitude - a.latitude);
-      const dLng = toRad(b.longitude - a.longitude);
-      const aa =
-        Math.sin(dLat / 2) ** 2 +
-        Math.cos(toRad(a.latitude)) *
+  const haversine = (a: { latitude: number; longitude: number }, b: { latitude: number; longitude: number }): number => {
+    const toRad = (v: number) => (v * Math.PI) / 180;
+    const R = 6371; 
+    const dLat = toRad(b.latitude - a.latitude);
+    const dLng = toRad(b.longitude - a.longitude);
+    const aa =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(a.latitude)) *
         Math.cos(toRad(b.latitude)) *
         Math.sin(dLng / 2) ** 2;
-      return R * 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1 - aa));
-    };
+    return R * 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1 - aa));
+  };
 
-    const visited = [];
-    const unvisited = [...locations];
+  const getOrderedLocations = useCallback(() => {
+    if (!userLocation || locations.length === 0) return [];
+
+    const visited: Location[] = [];
+    const unvisited: Location[] = [...locations];
     let current = { latitude: userLocation.lat, longitude: userLocation.lng };
 
     while (unvisited.length > 0) {
@@ -71,7 +78,7 @@ export default function Map({ onClick, locations, userLocation, onDistanceCalcul
     }
 
     return visited;
-  };
+  }, [locations, userLocation]);
 
   useEffect(() => {
     if (!userLocation || locations.length < 1) return;
@@ -112,7 +119,7 @@ export default function Map({ onClick, locations, userLocation, onDistanceCalcul
         }
       }
     );
-  }, [userLocation, locations, onDistanceCalculated]);
+  }, [userLocation, locations, onDistanceCalculated, getOrderedLocations]);
 
   return (
     <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
