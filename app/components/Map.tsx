@@ -1,9 +1,15 @@
 "use client";
-
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { useEffect, useState } from "react";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  DirectionsRenderer,
+} from "@react-google-maps/api";
 
 type MapProps = {
   onClick: (coords: { lat: number; lng: number }) => void;
+  onDistanceCalculated?: (distanceKm: number) => void;
   locations: {
     id: string;
     name: string;
@@ -11,12 +17,11 @@ type MapProps = {
     longitude: number;
     color?: string;
   }[];
+  userLocation: { lat: number; lng: number } | null;
 };
 
-export default function Map({ onClick, locations }: MapProps) {
-  const defaultCenter = locations.length
-    ? { lat: locations[0].latitude, lng: locations[0].longitude }
-    : { lat: 41.0082, lng: 28.9784 };
+export default function Map({ onClick, locations, userLocation, onDistanceCalculated }: MapProps) {
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
 
   const handleClick = (e: google.maps.MapMouseEvent) => {
     if (e.latLng) {
@@ -26,6 +31,89 @@ export default function Map({ onClick, locations }: MapProps) {
     }
   };
 
+  const defaultCenter = userLocation || { lat: 41.0082, lng: 28.9784 };
+
+  const getOrderedLocations = () => {
+    if (!userLocation || locations.length === 0) return [];
+
+    const haversine = (a: any, b: any) => {
+      const toRad = (v: number) => (v * Math.PI) / 180;
+      const R = 6371;
+      const dLat = toRad(b.latitude - a.latitude);
+      const dLng = toRad(b.longitude - a.longitude);
+      const aa =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(a.latitude)) *
+        Math.cos(toRad(b.latitude)) *
+        Math.sin(dLng / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1 - aa));
+    };
+
+    const visited = [];
+    const unvisited = [...locations];
+    let current = { latitude: userLocation.lat, longitude: userLocation.lng };
+
+    while (unvisited.length > 0) {
+      let nearestIdx = 0;
+      let nearestDist = haversine(current, unvisited[0]);
+
+      for (let i = 1; i < unvisited.length; i++) {
+        const dist = haversine(current, unvisited[i]);
+        if (dist < nearestDist) {
+          nearestIdx = i;
+          nearestDist = dist;
+        }
+      }
+
+      const nearest = unvisited.splice(nearestIdx, 1)[0];
+      visited.push(nearest);
+      current = nearest;
+    }
+
+    return visited;
+  };
+
+  useEffect(() => {
+    if (!userLocation || locations.length < 1) return;
+
+    const ordered = getOrderedLocations();
+
+    const origin = userLocation;
+    const destination = {
+      lat: ordered[ordered.length - 1].latitude,
+      lng: ordered[ordered.length - 1].longitude,
+    };
+    const waypoints = ordered.slice(0, -1).map((loc) => ({
+      location: { lat: loc.latitude, lng: loc.longitude },
+      stopover: true,
+    }));
+
+    const service = new google.maps.DirectionsService();
+    service.route(
+      {
+        origin,
+        destination,
+        waypoints,
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === "OK" && result) {
+          setDirections(result);
+
+          const legs = result.routes[0].legs;
+          const totalMeters = legs.reduce((sum, leg) => sum + (leg.distance?.value || 0), 0);
+          const totalKm = totalMeters / 1000;
+
+          if (onDistanceCalculated) {
+            onDistanceCalculated(totalKm);
+          }
+        } else {
+          console.error("Directions request failed", status);
+        }
+      }
+    );
+  }, [userLocation, locations, onDistanceCalculated]);
+
   return (
     <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       <GoogleMap
@@ -34,6 +122,9 @@ export default function Map({ onClick, locations }: MapProps) {
         zoom={10}
         onClick={handleClick}
       >
+        {userLocation && (
+          <Marker position={userLocation} label="You" />
+        )}
         {locations.map((loc) => (
           <Marker
             key={loc.id}
@@ -48,6 +139,7 @@ export default function Map({ onClick, locations }: MapProps) {
             }}
           />
         ))}
+        {directions && <DirectionsRenderer directions={directions} />}
       </GoogleMap>
     </LoadScript>
   );
