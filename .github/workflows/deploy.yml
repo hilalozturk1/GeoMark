@@ -1,0 +1,32 @@
+name: Deploy Next.js to Vercel/Netlify
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          curl -sL https://github.com/vercel/vercel/releases/download/v24.0.0/vercel-24.0.0-linux-x64.tar.gz | tar xz
+          ./vercel --prod --token $VERCEL_TOKEN
