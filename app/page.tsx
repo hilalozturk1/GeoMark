@@ -10,9 +10,7 @@ import {
   createListCollection,
   Portal,
   Flex,
-  Icon,
 } from "@chakra-ui/react";
-import { HiPencil } from "react-icons/hi";
 import { useLocationStore } from "./state/locationStore";
 
 import LocationList from "./components/LocationList";
