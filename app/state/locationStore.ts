@@ -1,12 +1,5 @@
 import {create} from "zustand";
-
-interface Location {
-  id: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  color: string;
-}
+import { Location } from "../types/location";
 
 interface LocationStore {
   locations: Location[];
