@@ -4,27 +4,16 @@ import dynamic from "next/dynamic";
 import {
   Text,
   Box,
-  Button,
-  Input,
-  Select,
-  createListCollection,
-  Portal,
   Flex,
 } from "@chakra-ui/react";
 import { useLocationStore } from "./state/locationStore";
+
+import LocationForm from "./components/LocationForm";
 
 import LocationList from "./components/LocationList";
 import type { Location } from "./types/location";
 
 const Map = dynamic(() => import("./components/Map"), { ssr: false });
-
-const colors = createListCollection({
-  items: [
-    { label: "Red", value: "#FF0000" },
-    { label: "Green", value: "#00FF00" },
-    { label: "Blue", value: "#0000FF" },
-  ],
-});
 
 export default function HomePage() {
   const [name, setName] = useState<string>("");
@@ -37,9 +26,10 @@ export default function HomePage() {
   });
   const [currentPosition, setCurrentPosition] = useState<{ lat: number; lng: number } | null>(null);
 
-  const locations = useLocationStore((state: { locations: Location[] }) => state.locations); 
-  const addLocation = useLocationStore((state: { addLocation: (location: Location) => void }) => state.addLocation);
-  const updateLocation = useLocationStore((state: { updateLocation: (id: string, location: Location) => void }) => state.updateLocation);
+  const locations = useLocationStore((state) => state.locations);
+  const addLocation = useLocationStore((state) => state.addLocation);
+  const updateLocation = useLocationStore((state) => state.updateLocation);
+  
   const [totalDistance, setTotalDistance] = useState<number | null>(null);
 
   useEffect(() => {
@@ -102,57 +92,16 @@ export default function HomePage() {
 
       <Flex mt={4} justify={"space-around"} alignItems={"center"} display={"flex"}>
         <Flex display={"block"} justify="flex-start" alignItems={"center"}>
-          <Box>
-            <Input
-              placeholder={editMode ? "Update Location Name" : "Location name"}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              mt={4}
-              size={"sm"}
-              width="300px"
-            />
-
-            <Select.Root collection={colors} size="sm" width="300px" mt={4}>
-              <Select.HiddenSelect />
-              <Select.Label>Select Color</Select.Label>
-              <Select.Control>
-                <Select.Trigger>
-                  <Select.ValueText placeholder="Select Color" />
-                </Select.Trigger>
-                <Select.IndicatorGroup>
-                  <Select.Indicator />
-                </Select.IndicatorGroup>
-              </Select.Control>
-              <Portal>
-                <Select.Positioner>
-                  <Select.Content>
-                    {colors.items.map((colorOption) => (
-                      <Select.Item
-                        key={colorOption.value}
-                        item={colorOption}
-                        onClick={() => setColor(colorOption.value)}
-                      >
-                        {colorOption.label}
-                        <Select.ItemIndicator />
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select.Positioner>
-              </Portal>
-            </Select.Root>
-
-            <Button onClick={editMode ? handleUpdateLocation : handleAddLocation} mt={4}>
-              {editMode ? "Update Location" : "Add Location"}
-            </Button>
-
-            {coordinates.lat && coordinates.lng && (
-              <Box mt={2}>
-                <Text fontWeight={"bold"}>Clicked Coordinates</Text>
-                <Text fontSize={"sm"}>Lat: {coordinates.lat}</Text>
-                <Text fontSize={"sm"}>Lng: {coordinates.lng}</Text>
-              </Box>
-            )}
-          </Box>
+          <LocationForm
+            name={name}
+            setName={setName}
+            color={color}
+            setColor={setColor}
+            coordinates={coordinates}
+            editMode={editMode}
+            handleAddLocation={handleAddLocation}
+            handleUpdateLocation={handleUpdateLocation}
+          />
         </Flex>
 
         <Flex wrap={"wrap"} display={"flex"} justify="flex-start" gap={4} mt={4}>
