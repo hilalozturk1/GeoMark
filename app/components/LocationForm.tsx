@@ -9,13 +9,9 @@ import {
   Portal,
 } from "@chakra-ui/react";
 
-const colors = createListCollection({
-  items: [
-    { label: "Red", value: "#FF0000" },
-    { label: "Green", value: "#00FF00" },
-    { label: "Blue", value: "#0000FF" },
-  ],
-});
+import { COLOR_OPTIONS } from "../constants/colors";
+
+const colors = createListCollection({ items: COLOR_OPTIONS });
 
 type Props = {
   name: string;
