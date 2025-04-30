@@ -10,7 +10,7 @@ export const useMapState = () => {
 
     const resetForm = () => {
         setName("");
-        setColor("#FF0000");
+        setColor(() => color ? color : "#FF0000");
         setCoordinates({ lat: null, lng: null });
         setEditMode(false);
         setEditingLocation(null);
