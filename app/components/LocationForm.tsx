@@ -10,19 +10,9 @@ import {
 } from "@chakra-ui/react";
 
 import { COLOR_OPTIONS } from "../constants/colors";
+import { LocationFormProps as Props } from "../types/props";
 
 const colors = createListCollection({ items: COLOR_OPTIONS });
-
-type Props = {
-  name: string;
-  setName: (value: string) => void;
-  color: string;
-  setColor: (value: string) => void;
-  coordinates: { lat: number | null; lng: number | null };
-  editMode: boolean;
-  handleAddLocation: () => void;
-  handleUpdateLocation: () => void;
-};
 
 export default function LocationForm({
   name,

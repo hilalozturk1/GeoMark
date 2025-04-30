@@ -1,10 +1,5 @@
 import { Marker } from "@react-google-maps/api";
-import { Location } from "../types/location";
-
-type MarkerRendererProps = {
-  locations: Location[];
-  userLocation: { lat: number; lng: number } | null;
-};
+import { MarkerRendererProps } from "../types/props";
 
 export default function MarkerRenderer({ locations, userLocation }: MarkerRendererProps) {
   return (

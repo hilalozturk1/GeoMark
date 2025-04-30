@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import { DirectionsRenderer } from "@react-google-maps/api";
 import { getOrderedLocations } from "../utils/getOrderedLocations";
-import { Location } from "../types/location";
 
-type DirectionsHandlerProps = {
-  locations: Location[];
-  userLocation: { lat: number; lng: number } | null;
-  onDistanceCalculated?: (distanceKm: number) => void;
-};
+import { DirectionsHandlerProps } from "../types/props";
 
 export default function DirectionsHandler({
   locations,

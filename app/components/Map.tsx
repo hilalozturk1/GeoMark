@@ -2,14 +2,7 @@
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import MarkerRenderer from "./MarkerRenderer";
 import DirectionsHandler from "./DirectionsHandler";
-import { Location } from "../types/location";
-
-type MapProps = {
-  onClick: (coords: { lat: number; lng: number }) => void;
-  onDistanceCalculated?: (distanceKm: number) => void;
-  locations: Location[];
-  userLocation: { lat: number; lng: number } | null;
-};
+import { MapProps } from "../types/props";
 
 export default function Map({
   onClick,

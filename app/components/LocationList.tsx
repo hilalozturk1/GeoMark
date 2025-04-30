@@ -1,11 +1,7 @@
 import { Box, Button, Text } from "@chakra-ui/react";
 import { HiPencil } from "react-icons/hi";
 import { Location } from "../types/location";
-
-interface LocationListProps {
-  locations: Location[];
-  handleEditLocation: (location: Location) => void;
-}
+import { LocationListProps } from "../types/props";
 
 export default function LocationList({ locations, handleEditLocation }: LocationListProps) {
   return (
