@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import {
   Text,
@@ -9,9 +9,10 @@ import {
 import { useLocationStore } from "./state/locationStore";
 
 import LocationForm from "./components/LocationForm";
-
 import LocationList from "./components/LocationList";
+
 import type { Location } from "./types/location";
+import { useGeolocation } from "./hooks/useGeolocation";
 
 const Map = dynamic(() => import("./components/Map"), { ssr: false });
 
@@ -24,7 +25,6 @@ export default function HomePage() {
     lat: null,
     lng: null,
   });
-  const [currentPosition, setCurrentPosition] = useState<{ lat: number; lng: number } | null>(null);
 
   const locations = useLocationStore((state) => state.locations);
   const addLocation = useLocationStore((state) => state.addLocation);
@@ -32,14 +32,7 @@ export default function HomePage() {
   
   const [totalDistance, setTotalDistance] = useState<number | null>(null);
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      setCurrentPosition({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      });
-    });
-  }, []);
+  const currentPosition = useGeolocation();
 
   const handleAddLocation = () => {
     if (!name || !coordinates.lat || !coordinates.lng) {
