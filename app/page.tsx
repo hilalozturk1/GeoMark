@@ -15,6 +15,9 @@ import {
 import { HiPencil } from "react-icons/hi";
 import { useLocationStore } from "./state/locationStore";
 
+import LocationList from "./components/LocationList";
+import type { Location } from "./types/location";
+
 const Map = dynamic(() => import("./components/Map"), { ssr: false });
 
 const colors = createListCollection({
@@ -24,14 +27,6 @@ const colors = createListCollection({
     { label: "Blue", value: "#0000FF" },
   ],
 });
-
-interface Location {
-  id: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  color: string;
-}
 
 export default function HomePage() {
   const [name, setName] = useState<string>("");
@@ -96,7 +91,7 @@ export default function HomePage() {
       alert("Please provide valid coordinates.");
     }
   };
-  
+
 
   return (
     <Box p={4}>
@@ -163,44 +158,7 @@ export default function HomePage() {
         </Flex>
 
         <Flex wrap={"wrap"} display={"flex"} justify="flex-start" gap={4} mt={4}>
-          {locations.map((location: Location) => ( 
-            <Box
-              key={location.id}
-              p={1}
-              borderRadius="xs"
-              borderWidth={1}
-              borderColor={location.color}
-              backgroundColor="slate.100"
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              width="auto"
-              maxHeight={"50px"}
-              minWidth="40px"
-            >
-              <Text color="black">{location.name}</Text>
-
-              <Button
-                onClick={() => handleEditLocation(location)}
-                ml={2}
-                display="flex"
-                alignItems="center"
-                size="xs"
-                colorScheme="teal"
-                color={"teal.800"}
-                backgroundColor={location.color}
-                _hover={{ backgroundColor: "teal.100" }}
-                _active={{ backgroundColor: "teal.100" }}
-                _focus={{ boxShadow: "outline" }}
-                variant="solid"
-                borderRadius="md"
-                opacity={0.5}
-              >
-                <Icon as={HiPencil} boxSize={4} mr={1} />
-                Edit
-              </Button>
-            </Box>
-          ))}
+          <LocationList locations={locations} handleEditLocation={handleEditLocation} />
         </Flex>
       </Flex>
 
