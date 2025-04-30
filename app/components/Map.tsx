@@ -23,7 +23,7 @@ export default function Map({
       <GoogleMap
         mapContainerStyle={{ height: "400px", width: "100%" }}
         center={defaultCenter}
-        zoom={10}
+        zoom={8}
         onClick={handleClick}
       >
         <MarkerRenderer locations={locations} userLocation={userLocation} />
