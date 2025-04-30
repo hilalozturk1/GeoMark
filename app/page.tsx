@@ -77,7 +77,7 @@ export default function HomePage() {
           />
         </Flex>
 
-        <Flex wrap={"wrap"} display={"flex"} justify="flex-start" gap={4} mt={4}>
+        <Flex wrap={"wrap"} display={"flex"} justify="flex-start" gap={4} mt={4} ml={4}>
           <LocationList locations={locations} handleEditLocation={handleEditLocation} />
         </Flex>
       </Flex>

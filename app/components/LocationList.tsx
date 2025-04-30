@@ -5,7 +5,7 @@ import { LocationListProps } from "../types/props";
 
 export default function LocationList({ locations, handleEditLocation }: LocationListProps) {
   return (
-    <Box mt={4}>
+    <>
       {locations.map((location: Location) => (
         <Box
           key={location.id}
@@ -44,6 +44,6 @@ export default function LocationList({ locations, handleEditLocation }: Location
           </Button>
         </Box>
       ))}
-    </Box>
+    </>
   );
 }
